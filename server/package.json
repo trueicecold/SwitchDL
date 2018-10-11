@@ -1,0 +1,14 @@
+{
+  "name": "SwitchDL",
+  "version": "1.0.0",
+  "description": "Server app to use with SwitchDL for the Nintendo Switch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "trueicecold",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
