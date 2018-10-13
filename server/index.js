@@ -8,8 +8,8 @@ var startFolder = '/Users/trueicecold/Desktop/ttt';
 
 app.use('/download', express.static(startFolder));
 app.get('/list/:folderPath?', function(req, res) {
-    var files = {status:1, items:[]};
-    req.params.folderPath = (req.params.folderPath != null) ? req.params.folderPath : '';
+    req.params.folderPath = (req.params.folderPath != null) ? req.params.folderPath : '/';
+    var files = {status:1, path:req.params.folderPath, items:[]};
     try {
         fs.readdirSync(path.join(startFolder, req.params.folderPath)).forEach(file => {
             if (file.indexOf(".") == 0) return;
