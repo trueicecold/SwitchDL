@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+    <head>
+        <script>
+            var server = require('./file_server');
+        
+            function toggleServer() {
+                if (!server.isStarted()) {
+                    if (document.querySelector('input[type="file"]').files.length > 0) {
+                        if (!isNaN(parseInt(document.querySelector(".port_number").value))) {
+                            server.init({
+                                port:document.querySelector(".port_number").value,
+                                startFolder:document.querySelector('input[type="file"]').files[0].path
+                            });
+                        }
+                        else {
+                            alert("Please enter a valid port.");
+                            return;
+                        }
+                    }
+                    else {
+                        alert("Please choose a starting folder.");
+                        return;
+                    }
+                    try {
+                        server.start();
+                        document.querySelector(".start_button").value = "Stop Server";
+                    }
+                    catch(e) {
+                        switch (e.code) {
+                            case "NO_PATH_SPECIFIED":
+                                alert("No path specified.");
+                                break;
+                            case "INVALID_PATH":
+                                alert("Invalid path specified.");
+                                break;
+                            case "INVALID_PORT":
+                                alert("Invalid port specified.");
+                                break;
+                            default:
+                                alert("Error starting server (" + e.code + ")");
+                                break;
+                        }
+                    }
+                }
+                else {
+                    server.stop();
+                    document.querySelector(".start_button").value = "Start Server";
+                }
+            }
+
+            function showPath() {
+                document.querySelector(".input_label").innerHTML = document.querySelector('input[type="file"]').files[0].path;
+            }
+        </script>
+        
+        <style>
+            body {
+                font-family:Quicksand;
+                background-color:#202225;
+                color:#ffffff;
+                overflow:hidden;
+            }
+
+            @font-face {
+                font-family: 'Quicksand';
+                src: url('assets/Quicksand-Regular.woff2') format('woff2'),
+                    url('assets/Quicksand-Regular.woff') format('woff');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            @font-face {
+                font-family: 'Quicksand';
+                src: url('assets/Quicksand-Bold.woff2') format('woff2'),
+                    url('assets/Quicksand-Bold.woff') format('woff');
+                font-weight: bold;
+                font-style: normal;
+            }
+
+            .logo {
+                margin-right:20px;
+            }
+
+            .port_number {
+                color:#ffffff;
+                width:100px;
+                height:20px;
+                background-color:#202225;
+                border:1px solid #ffffff;
+                width:60px;
+                padding-left:5px;
+            }
+
+            .input_label {
+                display:block;
+                width:300px;
+                height:20px;
+                border:1px solid #ffffff;
+                padding-left:5px;
+            }
+
+            input[type="file"] {
+                display:none;
+            }
+
+            .start_button {
+                width:120px;
+                height:20px;
+                color:#ffffff;
+                background-color:#202225;
+                border:1px solid #ffffff;
+            }
+
+            .option {
+                padding-right:10px;
+            }
+        </style>
+    </head>
+    <body>
+        <table cellpadding="0" cellspacing="0" style="width:100%;">
+            <tr>
+                <td rowspan="4"><img class="logo" src="assets/LOGO.PNG"/></td>
+            </tr>
+            <tr>
+                <td class="option">
+                    Starting Folder:
+                </td>
+                <td width="*">
+                    <label class="input_label" for="default_path">
+                    </label>
+                    <input id="default_path" onchange="showPath();" style="display:none;" type="file" directory webkitdirectory/>
+                </td>
+            </tr>
+            <tr>
+                <td class="option">
+                    Server Port:
+                </td>
+                <td>
+                    <input class="port_number" type="number" min="1000" max="10000" value="3333"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input class="start_button" type="button" value="Start Server" onclick="toggleServer();"/>
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

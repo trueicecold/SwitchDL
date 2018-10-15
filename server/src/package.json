@@ -1,0 +1,21 @@
+{
+  "name": "SwitchDL",
+  "version": "1.0.0",
+  "description": "Server app to use with SwitchDL for the Nintendo Switch",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "node build.js"
+  },
+  "author": "trueicecold",
+  "license": "ISC",
+  "dependencies": {
+    "electron-installer-dmg": "^2.0.0",
+    "electron-packager": "^12.2.0",
+    "express": "^4.16.4"
+  },
+  "devDependencies": {
+    "electron": "^3.0.4"
+  }
+}

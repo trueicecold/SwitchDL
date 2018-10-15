@@ -26,7 +26,7 @@ extern "C" {
 enum gui_t {
   GUI_INVALID,
   GUI_MAIN,
-  GUI_EDITOR,
+  GUI_SETTINGS,
   GUI_TX_WARNING
 };
 
@@ -56,6 +56,7 @@ public:
   inline u8 blendColor(u32 src, u32 dst, u8 alpha);
   color_t makeColor(u8 r, u8 g, u8 b, u8 a);
   void drawRectangle(s16 x, s16 y, s16 w, s16 h, color_t color);
+  void drawBorderedRectangle(s16 x, s16 y, s16 w, s16 h, s16 b_width, color_t border_color, color_t background_color);
   void drawRectangled(s16 x, s16 y, s16 w, s16 h, color_t color);
 
   bool fontInit();

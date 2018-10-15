@@ -4,11 +4,11 @@
 
 static std::vector<Thread> threads;
 
-Result Threads::create(ThreadFunc func) {
+Result Threads::create(ThreadFunc func, void* args) {
   Thread thread;
 
   Result res;
-  if (R_FAILED( res = threadCreate(&thread, func, nullptr, 0x2000, 0x2B, -2)))
+  if (R_FAILED( res = threadCreate(&thread, func, args, 0x2000, 0x2B, -2)))
     return res;
 
   if (R_FAILED( res = threadStart(&thread)))

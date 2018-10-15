@@ -463,6 +463,11 @@ void Gui::drawRectangle(s16 x, s16 y, s16 w, s16 h, color_t color) {
     }
 }
 
+void Gui::drawBorderedRectangle(s16 x, s16 y, s16 w, s16 h, s16 b_width, color_t border_color, color_t background_color) {
+    drawRectangled(x, y, w, h, border_color);
+    drawRectangled(x+b_width, y+b_width, w-(b_width*2), h-(b_width*2), background_color);
+}
+
 void Gui::drawShadow(s16 x, s16 y, s16 width, s16 height) {
   color_t shadowColor;
   u8 shadowAlphaBase = 80;
