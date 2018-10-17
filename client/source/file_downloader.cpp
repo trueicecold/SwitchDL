@@ -8,44 +8,59 @@ FileDownloader::FileDownloader()
 
 FileDownloader::~FileDownloader()
 {
-  curl_easy_cleanup( curl );
+}
+
+std::string FileDownloader::getFileList() {
+  std::string buffer;
+  curl = curl_easy_init();
+  if (!curl)
+    printf("Curl initialization failed!\n");
+
+  curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.140:3333/list");
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+  CURLcode res = curl_easy_perform(curl);
+
+  if (res != CURLE_OK)
+    printf("Update download CURL perform failed: %s\n", curl_easy_strerror(res));
+
+  curl_easy_cleanup(curl);
+
+  return buffer;
 }
 
 void FileDownloader::initDownload(DownloadInfo *dlInfo) {
-    curl = curl_easy_init();
-    if (!curl)
-      printf("Curl initialization failed!\n");
-    mkdir("/SwitchDL", 0777);
 
-    std::stringstream ss;
-
-    ss << "/SwitchDL/file.nsp." << this->index;
-
-    this->currIndex = index;
-    index++;
-
-    fp = fopen(ss.str().c_str(), "wb");
-
-    ss.str(std::string());
-    ss << dlInfo->start << "-" << dlInfo->end;
-
-
-
-    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.104:3000/static/SMPNO.nsp");
-    curl_easy_setopt(curl, CURLOPT_RANGE, ss.str().c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToFile);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, false);
-    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, calcProgress);
 }
 
 void FileDownloader::startDownload() {
+  curl = curl_easy_init();
+  if (!curl)
+    printf("Curl initialization failed!\n");
+  mkdir("/SwitchDL", 0777);
+
+  std::stringstream ss;
+
+  ss << "/SwitchDL/file.nsp." << this->index;
+
+  index++;
+
+  fp = fopen(ss.str().c_str(), "wb");
+
+  curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.140:3333/static/SMPNO.nsp");
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToFile);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+  curl_easy_setopt(curl, CURLOPT_NOPROGRESS, false);
+  curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, calcProgress);
+
   CURLcode res = curl_easy_perform(curl);
 
   if (res != CURLE_OK)
     printf("Update download CURL perform failed: %s\n", curl_easy_strerror(res));
 
   fclose(fp);
+  curl_easy_cleanup(curl);
 
 }
 
@@ -105,4 +120,9 @@ int FileDownloader::calcProgress(void* ptr, double TotalToDownload, double NowDo
 size_t FileDownloader::writeToFile(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t written = fwrite(ptr, size, nmemb, stream);
     return written;
+}
+
+size_t FileDownloader::writeToString(void *ptr, size_t size, size_t nmemb, std::string *str) {
+    str->append((char*) ptr, size * nmemb);
+    return size * nmemb;
 }

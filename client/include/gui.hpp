@@ -28,7 +28,7 @@ enum gui_t {
   GUI_INVALID,
   GUI_MAIN,
   GUI_SETTINGS,
-  GUI_TX_WARNING
+  GUI_BROWSER
 };
 
 class Gui {

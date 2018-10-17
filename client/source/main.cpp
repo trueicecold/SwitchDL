@@ -3,6 +3,7 @@
 #include "gui.hpp"
 #include "gui_main.hpp"
 #include "gui_settings.hpp"
+#include "gui_browser.hpp"
 #include <chrono>
 
 #include <iostream>
@@ -80,7 +81,7 @@ int main(int argc, char** argv) {
   setTheme(colorSetId);
   setsysExit();
 
-  Gui::g_nextGui = GUI_SETTINGS;
+  Gui::g_nextGui = GUI_BROWSER;
 
   /*Handle txHandle;
   if (R_FAILED(smRegisterService(&txHandle, "tx", false, 1)))
@@ -121,6 +122,9 @@ int main(int argc, char** argv) {
           break;
         case GUI_SETTINGS:
           currGui = new GuiSettings();
+          break;
+        case GUI_BROWSER:
+          currGui = new GuiBrowser();
           break;
         default: break;
       }
