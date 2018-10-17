@@ -14,13 +14,13 @@ class Gui;
 class NumericKeyboard
 {
   private:
-    static inline u32 _startX;
-    static inline u32 _startY;
+    static inline std::string display_string = "";
 
   public:
-    static void show(u32 startX, u32 startY);
+    static void show();
     static void hide();
     static void draw(Gui *gui);
+    static inline std::string *bind_value;
     static inline std::string text = "";
     static inline bool shown = false;
 
