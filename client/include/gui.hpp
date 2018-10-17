@@ -7,6 +7,7 @@
 #include "snackbar.hpp"
 #include "list_selector.hpp"
 #include "message_box.hpp"
+#include "numeric_keyboard.hpp"
 
 extern "C" {
   #include "theme.h"

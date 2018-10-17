@@ -553,6 +553,9 @@ void Gui::endDraw() {
   if (Gui::g_currMessageBox != nullptr)
     Gui::g_currMessageBox->draw(this);
 
+  if (NumericKeyboard::shown)
+    NumericKeyboard::draw(this);
+
   gfxWaitForVsync();
   gfxFlushBuffers();
   gfxSwapBuffers();

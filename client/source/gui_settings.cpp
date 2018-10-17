@@ -4,11 +4,6 @@
 #include <sstream>
 #include <math.h>
 
-enum  {
-  NUMERIC_KEYBOARD_SHOWN,
-  NUMERIC_KEYBOARD_HIDDEN
-} numericKeyboardState = NUMERIC_KEYBOARD_HIDDEN;
-
 GuiSettings::GuiSettings() : Gui() {
 }
 
@@ -17,6 +12,9 @@ GuiSettings::~GuiSettings() {
 
 void GuiSettings::update() {
     Gui::update();
+    /*if (NumericKeyboard::shown) {
+        NumericKeyboard::update();
+    }*/
 }
 
 void GuiSettings::draw() {
@@ -35,15 +33,15 @@ void GuiSettings::draw() {
 }
 
 void GuiSettings::onInput(u32 kdown) {
-    printf("asdasdas\n");
     if (kdown & KEY_A) {
-        if (numericKeyboardState == NUMERIC_KEYBOARD_HIDDEN) {
-            printf("A CLICKED\n");
-        }
+        NumericKeyboard::show(300, 200);
     }
 }
 
 void GuiSettings::onTouch(touchPosition &touch) {
+    if (touch.px >= 250 && touch.px <= 600 && touch.py >= 160 && touch.py <= 210) {
+        NumericKeyboard::show(300, 200);
+    }
 }
 
 void GuiSettings::onGesture(touchPosition &startPosition, touchPosition &endPosition) {

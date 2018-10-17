@@ -6,6 +6,7 @@
 typedef struct {
   color_t textColor;
   color_t backgroundColor;
+  color_t backgroundColorSemi;
   color_t highlightColor;
   color_t selectedColor;
   color_t separatorColor;
