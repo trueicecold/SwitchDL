@@ -13,6 +13,10 @@ typedef struct {
   color_t selectedButtonColor;
   color_t keyboardBackgroundColor;
   color_t keyboardButtonBackgroundColor;
+  color_t keyboardDeleteBackgroundColor;
+  color_t keyboardDeleteTextColor;
+  color_t keyboardOKBackgroundColor;
+  color_t keyboardOKTextColor;
 } theme_t;
 
 extern theme_t currTheme;

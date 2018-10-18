@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
   setTheme(colorSetId);
   setsysExit();
 
-  Gui::g_nextGui = GUI_BROWSER;
+  Gui::g_nextGui = GUI_SETTINGS;
 
   /*Handle txHandle;
   if (R_FAILED(smRegisterService(&txHandle, "tx", false, 1)))
@@ -150,8 +150,14 @@ int main(int argc, char** argv) {
       hidTouchRead(&touch, 0);
 
     if (touchCnt < touchCntOld) {
-      currGui->onTouch(touchEnd);
-      currGui->onGesture(touch, touchEnd);
+      if (NumericKeyboard::shown) {
+          NumericKeyboard::onTouch(touchEnd);
+          //NumericKeyboard::onGesture(touch, touchEnd);
+      }
+      else {
+        currGui->onTouch(touchEnd);
+        currGui->onGesture(touch, touchEnd);
+      }
     }
 
     hidTouchRead(&touchEnd, 0);
@@ -171,6 +177,7 @@ int main(int argc, char** argv) {
   updateThreadRunning = false;
   Threads::joinAll();
 
+  delete currGui;
   socketExit();
   gfxExit();
   return 0;

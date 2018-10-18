@@ -30,6 +30,26 @@ std::string FileDownloader::getFileList() {
   return buffer;
 }
 
+std::string FileDownloader::ping() {
+  std::string buffer;
+  curl = curl_easy_init();
+  if (!curl)
+    printf("Curl initialization failed!\n");
+
+  curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.140:3333/ping");
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+
+  CURLcode res = curl_easy_perform(curl);
+
+  if (res != CURLE_OK)
+    printf("Update download CURL perform failed: %s\n", curl_easy_strerror(res));
+
+  curl_easy_cleanup(curl);
+
+  return buffer;
+}
+
 void FileDownloader::initDownload(DownloadInfo *dlInfo) {
 
 }

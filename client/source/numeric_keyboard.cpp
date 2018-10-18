@@ -7,120 +7,159 @@ typedef struct {
    std::string c;
 } Button;
 
+/*static void NumericKeyboard::onGesture(touchPosition &startPosition, touchPosition &endPosition) {
+}*/
+
+std::vector<Button> buttons {
+    {
+        .x = 360,
+        .y = 390,
+        .w = 184,
+        .h = 60,
+        .c = "1"
+    },
+    {
+        .x = 549,
+        .y = 390,
+        .w = 184,
+        .h = 60,
+        .c = "2"
+    },
+    {
+        .x = 738,
+        .y = 390,
+        .w = 184,
+        .h = 60,
+        .c = "3"
+    },
+    {
+        .x = 360,
+        .y = 454,
+        .w = 184,
+        .h = 60,
+        .c = "4"
+    },
+    {
+        .x = 549,
+        .y = 454,
+        .w = 184,
+        .h = 60,
+        .c = "5"
+    },
+    {
+        .x = 738,
+        .y = 454,
+        .w = 184,
+        .h = 60,
+        .c = "6"
+    },
+    {
+        .x = 360,
+        .y = 518,
+        .w = 184,
+        .h = 60,
+        .c = "7"
+    },
+    {
+        .x = 549,
+        .y = 518,
+        .w = 184,
+        .h = 60,
+        .c = "8"
+    },
+    {
+        .x = 738,
+        .y = 518,
+        .w = 184,
+        .h = 60,
+        .c = "9"
+    },
+    {
+        .x = 360,
+        .y = 582,
+        .w = 184,
+        .h = 60,
+        .c = "."
+    },
+    {
+        .x = 549,
+        .y = 582,
+        .w = 184,
+        .h = 60,
+        .c = "0"
+    }
+};
+
 NumericKeyboard::NumericKeyboard()
 {
+    setsysInitialize();
+    setsysGetColorSetId(&NumericKeyboard::colorSetId);
+    setsysExit();
 }
 
 NumericKeyboard::~NumericKeyboard()
 {
 }
 
-void NumericKeyboard::show() {
-    NumericKeyboard::display_string = std::string(*NumericKeyboard::bind_value);
+void NumericKeyboard::show(std::string caption) {
+    NumericKeyboard::edit_display_string = std::string(*NumericKeyboard::bind_value);
+    NumericKeyboard::caption_display_string = std::string(caption   );
     NumericKeyboard::shown = true;
 }
 
 void NumericKeyboard::hide() {
+    NumericKeyboard::shown = false;
+    NumericKeyboard::bind_value = nullptr;
+    NumericKeyboard::edit_display_string = "";
 }
 
-std::vector<Button> buttons {
-    {
-        .x = 435,
-        .y = 460,
-        .w = 100,
-        .h = 50,
-        .c = "1"
-    },
-    {
-        .x = 545,
-        .y = 460,
-        .w = 100,
-        .h = 50,
-        .c = "2"
-    },
-    {
-        .x = 655,
-        .y = 460,
-        .w = 100,
-        .h = 50,
-        .c = "3"
-    },
-    {
-        .x = 435,
-        .y = 520,
-        .w = 100,
-        .h = 50,
-        .c = "4"
-    },
-    {
-        .x = 545,
-        .y = 520,
-        .w = 100,
-        .h = 50,
-        .c = "5"
-    },
-    {
-        .x = 655,
-        .y = 520,
-        .w = 100,
-        .h = 50,
-        .c = "6"
-    },
-    {
-        .x = 435,
-        .y = 580,
-        .w = 100,
-        .h = 50,
-        .c = "7"
-    },
-    {
-        .x = 545,
-        .y = 580,
-        .w = 100,
-        .h = 50,
-        .c = "8"
-    },
-    {
-        .x = 655,
-        .y = 580,
-        .w = 100,
-        .h = 50,
-        .c = "9"
-    },
-    {
-        .x = 435,
-        .y = 640,
-        .w = 100,
-        .h = 50,
-        .c = "."
-    },
-    {
-        .x = 545,
-        .y = 640,
-        .w = 100,
-        .h = 50,
-        .c = "0"
-    },
-    {
-        .x = 655,
-        .y = 640,
-        .w = 100,
-        .h = 50,
-        .c = "\uE149"
+void NumericKeyboard::onTouch(touchPosition &touch) {
+    for ( Button &button : buttons ) {
+        if (touch.px >= button.x && touch.px <= button.x+button.w && touch.py >= button.y && touch.py <= button.y+button.h) {
+            if (button.c != "\uE149")
+                NumericKeyboard::edit_display_string += button.c;
+            return;
+        }
     }
-};
+    if (touch.px >= 927 && touch.px <= 1043 && touch.py >= 390 && touch.py <= 450) {
+        NumericKeyboard::edit_display_string.pop_back();
+        return;
+    }
+    if (touch.px >= 927 && touch.px <= 1043 && touch.py >= 454 && touch.py <= 644) {
+        *NumericKeyboard::bind_value = std::string(NumericKeyboard::edit_display_string);
+        NumericKeyboard::hide();
+    }
+}
 
 void NumericKeyboard::draw(Gui *gui) {
     u32 glyphWidth,glyphHeight;
 
-    gui->drawRectangled(0, 0, Gui::g_framebuffer_width, Gui::g_framebuffer_height, currTheme.backgroundColorSemi);
-    
-    gui->drawText(font20, 427, 422, currTheme.textColor, NumericKeyboard::display_string.c_str());
+    //drawing Keyboard UI
+    gui->drawRectangled(0, 0, Gui::g_framebuffer_width, Gui::g_framebuffer_height-350, currTheme.backgroundColorSemi);
+    gui->drawRectangle(0, Gui::g_framebuffer_height-350, Gui::g_framebuffer_width, Gui::g_framebuffer_height, currTheme.keyboardBackgroundColor);
+    gui->drawRectangle(390, 245, 600, 5, currTheme.textColor);
 
-    gui->drawRectangle(427, 452, 336, 246, currTheme.keyboardBackgroundColor);
+    //Drawing caption
+    gui->drawText(font24, 130, 55, currTheme.textColor, NumericKeyboard::caption_display_string.c_str());
+    
+    //Drawing edited value
+    gui->drawText(font24, 405, 200, currTheme.textColor, NumericKeyboard::edit_display_string.c_str());
+
+    //Drawing numeric buttons
     for ( Button &button : buttons ) {
         gui->getTextDimensions(font24, button.c.c_str(), &glyphWidth, &glyphHeight);
         gui->drawRectangle(button.x, button.y, button.w, button.h, currTheme.keyboardButtonBackgroundColor);
-        gui->drawText(font24, button.x+((button.w-glyphWidth)/2), button.y+3, currTheme.textColor, button.c.c_str());
+        gui->drawText(font24, button.x+((button.w-glyphWidth)/2), button.y+6, currTheme.textColor, button.c.c_str());
     }
+
+    //Drawing delete and OK buttons
+    gui->getTextDimensions(font24, "\u3e91", &glyphWidth, &glyphHeight);
+    gui->drawRectangle(927, 390, 116, 60, currTheme.keyboardDeleteBackgroundColor);
+    gui->drawText(font24, 927 + ((116-glyphWidth)/2), 393, currTheme.keyboardDeleteTextColor, "\ue091");
+    gui->drawText(font20, 1016, 387, currTheme.keyboardDeleteTextColor, "\ue0e1");
+
+    gui->getTextDimensions(font24, "OK", &glyphWidth, &glyphHeight);
+    gui->drawRectangle(927, 454, 116, 190, currTheme.keyboardOKBackgroundColor);
+    gui->drawText(font24, 927 + ((116-glyphWidth)/2), 524, currTheme.keyboardDeleteTextColor, "OK");
+    gui->drawText(font20, 1016, 451, currTheme.keyboardDeleteTextColor, "\ue0ef");
 }

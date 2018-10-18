@@ -30,6 +30,7 @@ class FileDownloader
   public:
     void initDownload(DownloadInfo *dlInfo);
     void startDownload();
+    std::string ping();
     std::string getFileList();
     static int calcProgress(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
     static std::string formatBytes(uint bytes);

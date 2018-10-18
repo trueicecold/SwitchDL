@@ -1,4 +1,5 @@
 #include "gui_settings.hpp"
+#include "file_downloader.hpp"
 
 #include <string>
 #include <sstream>
@@ -20,6 +21,8 @@ void GuiSettings::update() {
 std::string ip_address = "10.0.0.138";
 std::string port = "9999";
 
+FileDownloader downloader;
+
 void GuiSettings::draw() {
     Gui::beginDraw();
     Gui::drawRectangle(0, 0, Gui::g_framebuffer_width, Gui::g_framebuffer_height, currTheme.backgroundColor);
@@ -40,14 +43,14 @@ void GuiSettings::draw() {
 
 void GuiSettings::onInput(u32 kdown) {
     if (kdown & KEY_A) {
-        NumericKeyboard::show();
+        //NumericKeyboard::show();
     }
 }
 
 void GuiSettings::onTouch(touchPosition &touch) {
     if (touch.px >= 250 && touch.px <= 600 && touch.py >= 160 && touch.py <= 210) {
         NumericKeyboard::bind_value = &ip_address;
-        NumericKeyboard::show();
+        NumericKeyboard::show("Enter the IP address.");
     }
 }
 
