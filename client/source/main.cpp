@@ -37,6 +37,8 @@ static u32 kdown = 0;
 static touchPosition touch;
 static touchPosition touchEnd;
 
+static u64 repetitionKeys = 0;
+
 void update(void *args) {
   while (updateThreadRunning) {
     auto begin = std::chrono::steady_clock::now();
@@ -46,7 +48,11 @@ void update(void *args) {
       currGui->update();
     mutexUnlock(&mutexCurrGui);
 
-    if (kheld & (KEY_LEFT | KEY_RIGHT | KEY_UP | KEY_DOWN)) inputTicker++;
+    if (NumericKeyboard::shown) {
+      repetitionKeys = (KEY_B);
+    }
+
+    if (kheld & repetitionKeys) inputTicker++;
     else inputTicker = 0;
 
     svcSleepThread(1.0E6 - std::chrono::duration<double, std::nano>(std::chrono::steady_clock::now() - begin).count());
@@ -122,11 +128,15 @@ int main(int argc, char** argv) {
           break;
         case GUI_SETTINGS:
           currGui = new GuiSettings();
+          repetitionKeys = 0;
           break;
         case GUI_BROWSER:
           currGui = new GuiBrowser();
+          repetitionKeys = (KEY_UP | KEY_DOWN);
           break;
-        default: break;
+        default: 
+          repetitionKeys = 0;
+          break;
       }
       Gui::g_nextGui = GUI_INVALID;
       mutexUnlock(&mutexCurrGui);
@@ -135,12 +145,28 @@ int main(int argc, char** argv) {
     if (currGui != nullptr) {
       currGui->draw();
 
+      if (kdown & KEY_PLUS) {
+        if (!NumericKeyboard::shown) {
+          break;
+        }
+      }
+
       if (kdown || hidKeysUp(CONTROLLER_P1_AUTO)) {
-        currGui->onInput(kdown);
+        if (NumericKeyboard::shown) {
+          NumericKeyboard::onInput(kdown);
+        }
+        else {
+          currGui->onInput(kdown);
+        }
       }
 
       if (inputTicker > LONG_PRESS_ACTIVATION_DELAY && (inputTicker % LONG_PRESS_DELAY) == 0) {
+        if (NumericKeyboard::shown) {
+          NumericKeyboard::onInput(kheld);
+        }
+        else {
           currGui->onInput(kheld);
+        }
       }
     }
 
@@ -168,9 +194,6 @@ int main(int argc, char** argv) {
       inputTicker = 0;
 
     kheldOld = kheld;
-
-    if (kdown & KEY_PLUS)
-      break;
   }
 
   /*curlClass::downloadCanceled = true;*/

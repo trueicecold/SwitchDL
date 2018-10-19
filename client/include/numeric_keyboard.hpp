@@ -21,11 +21,14 @@ class NumericKeyboard
     static inline color_t deleteTextColor;
     static inline color_t OKBackgroundColor;
     static inline color_t OKTextColor;
+    static inline void deleteCharacter();
+    static inline void ok();
 
   public:
     static void show(std::string caption);
     static void hide();
     static void onTouch(touchPosition &touch);
+    static void onInput(u32 keydown);
     //static void onGesture(touchPosition &startPosition, touchPosition &endPosition);
 
     static void draw(Gui *gui);

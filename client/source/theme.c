@@ -10,7 +10,7 @@ void setTheme(ColorSetId colorSetId) {
       currTheme = (theme_t) {
         .textColor                      =      RGBA8(0x00, 0x00, 0x00, 0xFF),
         .backgroundColor                =      RGBA8(0xEA, 0xEA, 0xEA, 0xFF),
-        .backgroundColorSemi            =      RGBA8(0xEA, 0xEA, 0xEA, 0xE8),
+        .backgroundColorSemi            =      RGBA8(0xEA, 0xEA, 0xEA, 0xF0),
         .highlightColor                 =      RGBA8(0x27, 0xA3, 0xC7, 0xFF),
         .selectedColor                  =      RGBA8(0x50, 0x2D, 0xE4, 0xFF),
         .separatorColor                 =      RGBA8(0x60, 0x60, 0x60, 0x80),
@@ -27,7 +27,7 @@ void setTheme(ColorSetId colorSetId) {
       currTheme = (theme_t) {
         .textColor                      =      RGBA8(0xFF, 0xFF, 0xFF, 0xFF),
         .backgroundColor                =      RGBA8(0x31, 0x31, 0x31, 0xFF),
-        .backgroundColorSemi            =      RGBA8(0x31, 0x31, 0x31, 0xE8),
+        .backgroundColorSemi            =      RGBA8(0x31, 0x31, 0x31, 0xF0),
         .highlightColor                 =      RGBA8(0x27, 0xA3, 0xC7, 0xFF),
         .selectedColor                  =      RGBA8(0x59, 0xED, 0xC0, 0xFF),
         .separatorColor                 =      RGBA8(0x60, 0x60, 0x60, 0x80),

@@ -103,7 +103,7 @@ NumericKeyboard::~NumericKeyboard()
 
 void NumericKeyboard::show(std::string caption) {
     NumericKeyboard::edit_display_string = std::string(*NumericKeyboard::bind_value);
-    NumericKeyboard::caption_display_string = std::string(caption   );
+    NumericKeyboard::caption_display_string = std::string(caption);
     NumericKeyboard::shown = true;
 }
 
@@ -122,12 +122,11 @@ void NumericKeyboard::onTouch(touchPosition &touch) {
         }
     }
     if (touch.px >= 927 && touch.px <= 1043 && touch.py >= 390 && touch.py <= 450) {
-        NumericKeyboard::edit_display_string.pop_back();
+        NumericKeyboard::deleteCharacter();
         return;
     }
     if (touch.px >= 927 && touch.px <= 1043 && touch.py >= 454 && touch.py <= 644) {
-        *NumericKeyboard::bind_value = std::string(NumericKeyboard::edit_display_string);
-        NumericKeyboard::hide();
+        NumericKeyboard::ok();
     }
 }
 
@@ -137,12 +136,12 @@ void NumericKeyboard::draw(Gui *gui) {
     //drawing Keyboard UI
     gui->drawRectangled(0, 0, Gui::g_framebuffer_width, Gui::g_framebuffer_height-350, currTheme.backgroundColorSemi);
     gui->drawRectangle(0, Gui::g_framebuffer_height-350, Gui::g_framebuffer_width, Gui::g_framebuffer_height, currTheme.keyboardBackgroundColor);
-    gui->drawRectangle(390, 245, 600, 5, currTheme.textColor);
 
     //Drawing caption
     gui->drawText(font24, 130, 55, currTheme.textColor, NumericKeyboard::caption_display_string.c_str());
     
     //Drawing edited value
+    gui->drawRectangle(390, 245, 600, 5, currTheme.textColor);
     gui->drawText(font24, 405, 200, currTheme.textColor, NumericKeyboard::edit_display_string.c_str());
 
     //Drawing numeric buttons
@@ -162,4 +161,34 @@ void NumericKeyboard::draw(Gui *gui) {
     gui->drawRectangle(927, 454, 116, 190, currTheme.keyboardOKBackgroundColor);
     gui->drawText(font24, 927 + ((116-glyphWidth)/2), 524, currTheme.keyboardDeleteTextColor, "OK");
     gui->drawText(font20, 1016, 451, currTheme.keyboardDeleteTextColor, "\ue0ef");
+
+    //Drawing the cursor
+    gui->getTextDimensions(font24, NumericKeyboard::edit_display_string.c_str(), &glyphWidth, &glyphHeight);
+    gui->drawRectangle(405 + glyphWidth + 5, 199, 4, 40, currTheme.highlightColor);
+
+    //Drawing the bottom part
+    gui->drawRectangle(30, 658, 1220, 1, currTheme.textColor);
+    gui->drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E2 Cancel", ALIGNED_RIGHT);
+}
+
+void NumericKeyboard::onInput(u32 kdown) {
+    if (kdown & KEY_B) {
+        NumericKeyboard::deleteCharacter();
+    }
+    else if (kdown & KEY_PLUS) {
+        NumericKeyboard::ok();
+    }
+    else if (kdown & KEY_X) {
+        NumericKeyboard::hide();
+    }
+}
+
+void NumericKeyboard::deleteCharacter() {
+    if (NumericKeyboard::edit_display_string != "")
+        NumericKeyboard::edit_display_string.pop_back();
+}
+
+void NumericKeyboard::ok() {
+    *NumericKeyboard::bind_value = std::string(NumericKeyboard::edit_display_string);
+    NumericKeyboard::hide();
 }

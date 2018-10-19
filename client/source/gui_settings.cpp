@@ -30,27 +30,33 @@ void GuiSettings::draw() {
     Gui::drawRectangle(50, 90, 260, 2, currTheme.textColor);
 
     Gui::drawText(font24, 50, 160, currTheme.textColor, "IP Address:");
-    Gui::drawBorderedRectangle(250, 160, 350, 50, 1, currTheme.textColor, currTheme.backgroundColor);
-    Gui::drawText(font24, 260, 165, currTheme.textColor, ip_address.c_str());
+    Gui::drawBorderedRectangle(250, 166, 350, 40, 1, currTheme.keyboardOKBackgroundColor, currTheme.backgroundColor);
+    Gui::drawText(font20, 255, 170, currTheme.keyboardOKBackgroundColor, ip_address.c_str());
 
-    Gui::drawText(font24, 50, 230, currTheme.textColor, "Port:");
-    Gui::drawBorderedRectangle(250, 230, 200, 50, 1, currTheme.textColor, currTheme.backgroundColor);
-    Gui::drawText(font24, 260, 235, currTheme.textColor, port.c_str());
+    Gui::drawText(font24, 50, 219, currTheme.textColor, "Port:");
+    Gui::drawBorderedRectangle(250, 225, 200, 40, 1, currTheme.keyboardOKBackgroundColor, currTheme.backgroundColor);
+    Gui::drawText(font20, 255, 229, currTheme.keyboardOKBackgroundColor, port.c_str());
 
     Gui::drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E1 Back     \uE0E0 Save", ALIGNED_RIGHT);
     Gui::endDraw();
 }
 
 void GuiSettings::onInput(u32 kdown) {
-    if (kdown & KEY_A) {
-        //NumericKeyboard::show();
+    if (!NumericKeyboard::shown) {
+        if (kdown & KEY_B) {
+            Gui::g_nextGui = GUI_BROWSER;
+        }
     }
 }
 
 void GuiSettings::onTouch(touchPosition &touch) {
-    if (touch.px >= 250 && touch.px <= 600 && touch.py >= 160 && touch.py <= 210) {
+    if (touch.px >= 250 && touch.px <= 600 && touch.py >= 166 && touch.py <= 206) {
         NumericKeyboard::bind_value = &ip_address;
         NumericKeyboard::show("Enter the IP address.");
+    }
+    else if (touch.px >= 250 && touch.px <= 450 && touch.py >= 225 && touch.py <= 265) {
+        NumericKeyboard::bind_value = &port;
+        NumericKeyboard::show("Enter the port number.");
     }
 }
 

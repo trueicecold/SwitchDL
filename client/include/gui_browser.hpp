@@ -24,4 +24,8 @@ public:
 
 private:
   std::vector<BrowserItem> m_browserItems;
+  u16 startIndex;
+  u16 currIndex;
+  u16 currItemIndex;
+  u16 itemsAmount;
 };
