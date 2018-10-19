@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <math.h>
 
 GuiSettings::GuiSettings() : Gui() {
@@ -29,6 +30,7 @@ void GuiSettings::draw() {
     Gui::drawText(font24, 50, 50, currTheme.textColor, "SwitchDL Settings");
     Gui::drawRectangle(50, 90, 260, 2, currTheme.textColor);
 
+    //Drawing the fields
     Gui::drawText(font24, 50, 160, currTheme.textColor, "IP Address:");
     Gui::drawBorderedRectangle(250, 166, 350, 40, 1, currTheme.keyboardOKBackgroundColor, currTheme.backgroundColor);
     Gui::drawText(font20, 255, 170, currTheme.keyboardOKBackgroundColor, ip_address.c_str());
@@ -37,6 +39,8 @@ void GuiSettings::draw() {
     Gui::drawBorderedRectangle(250, 225, 200, 40, 1, currTheme.keyboardOKBackgroundColor, currTheme.backgroundColor);
     Gui::drawText(font20, 255, 229, currTheme.keyboardOKBackgroundColor, port.c_str());
 
+    //Drawing the bottom part
+    Gui::drawRectangle(30, 658, 1220, 1, currTheme.textColor);
     Gui::drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E1 Back     \uE0E0 Save", ALIGNED_RIGHT);
     Gui::endDraw();
 }
@@ -45,6 +49,9 @@ void GuiSettings::onInput(u32 kdown) {
     if (!NumericKeyboard::shown) {
         if (kdown & KEY_B) {
             Gui::g_nextGui = GUI_BROWSER;
+        }
+        else if (kdown & KEY_A) {
+            GuiSettings::save();
         }
     }
 }
@@ -61,4 +68,21 @@ void GuiSettings::onTouch(touchPosition &touch) {
 }
 
 void GuiSettings::onGesture(touchPosition &startPosition, touchPosition &endPosition) {
+}
+
+void GuiSettings::save() {
+    FILE* fp;
+
+    try {
+        mkdir("/SwitchDL", 0777);
+        fp = fopen("/SwitchDL/config.json", "w");
+        fputs(("{\"address\":\"" + ip_address + "\", \"port\":\"" + port + "\"}").c_str(), fp);
+        fclose(fp);
+        (new Snackbar("Settings saves successfully."))->show();
+        Gui::g_nextGui = GUI_BROWSER;
+    }
+    catch(std::exception& e) {
+        printf("Failed saving configuration\n");
+        (new Snackbar("Failed saving settings."))->show();
+    }
 }

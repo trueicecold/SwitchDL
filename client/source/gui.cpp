@@ -8,7 +8,7 @@ static float menuTimer = 0.0F;
 Gui::Gui() {
   this->framebuffer = gfxGetFramebuffer(&Gui::g_framebuffer_width, &Gui::g_framebuffer_height);
 
-  Gui::g_currSnackbar = nullptr;
+  //Gui::g_currSnackbar = nullptr;
   Gui::g_currListSelector = nullptr;
   Gui::g_currMessageBox = nullptr;
 
@@ -22,7 +22,7 @@ Gui::Gui() {
 }
 
 Gui::~Gui() {
-  Gui::g_currSnackbar = nullptr;
+  //Gui::g_currSnackbar = nullptr;
   Gui::g_currListSelector = nullptr;
   Gui::g_currMessageBox = nullptr;
 
@@ -547,8 +547,10 @@ void Gui::endDraw() {
   if (Gui::g_currListSelector != nullptr)
     Gui::g_currListSelector->draw(this);
 
-  if (Gui::g_currSnackbar != nullptr)
+  if (Gui::g_currSnackbar != nullptr) {
+    printf("enddraw2\n");
     Gui::g_currSnackbar->draw(this);
+  }
 
   if (Gui::g_currMessageBox != nullptr)
     Gui::g_currMessageBox->draw(this);

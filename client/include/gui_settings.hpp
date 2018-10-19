@@ -19,6 +19,7 @@ public:
   void onInput(u32 kdown);
   void onTouch(touchPosition &touch);
   void onGesture(touchPosition &startPosition, touchPosition &endPosition);
+  void save();
 
 private:
   static inline struct {

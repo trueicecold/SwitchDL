@@ -152,10 +152,10 @@ void NumericKeyboard::draw(Gui *gui) {
     }
 
     //Drawing delete and OK buttons
-    gui->getTextDimensions(font24, "\u3e91", &glyphWidth, &glyphHeight);
+    gui->getTextDimensions(font24, "\ue091", &glyphWidth, &glyphHeight);
     gui->drawRectangle(927, 390, 116, 60, currTheme.keyboardDeleteBackgroundColor);
     gui->drawText(font24, 927 + ((116-glyphWidth)/2), 393, currTheme.keyboardDeleteTextColor, "\ue091");
-    gui->drawText(font20, 1016, 387, currTheme.keyboardDeleteTextColor, "\ue0e1");
+    gui->drawText(font20, 1016, 387, currTheme.keyboardDeleteTextColor, "\ue0e2");
 
     gui->getTextDimensions(font24, "OK", &glyphWidth, &glyphHeight);
     gui->drawRectangle(927, 454, 116, 190, currTheme.keyboardOKBackgroundColor);
@@ -168,17 +168,17 @@ void NumericKeyboard::draw(Gui *gui) {
 
     //Drawing the bottom part
     gui->drawRectangle(30, 658, 1220, 1, currTheme.textColor);
-    gui->drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E2 Cancel", ALIGNED_RIGHT);
+    gui->drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\ue0e1 Cancel", ALIGNED_RIGHT);
 }
 
 void NumericKeyboard::onInput(u32 kdown) {
-    if (kdown & KEY_B) {
+    if (kdown & KEY_X) {
         NumericKeyboard::deleteCharacter();
     }
     else if (kdown & KEY_PLUS) {
         NumericKeyboard::ok();
     }
-    else if (kdown & KEY_X) {
+    else if (kdown & KEY_B) {
         NumericKeyboard::hide();
     }
 }
