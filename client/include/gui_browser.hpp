@@ -11,6 +11,13 @@ typedef struct {
   u64 fileSize;
 } BrowserItem;
 
+enum ConnectionState{
+  NOT_CONNECTED,
+  CONNECTION_ERROR,
+  LOADING,
+  LOADED
+};
+
 class GuiBrowser : public Gui {
 public:
   GuiBrowser();
@@ -18,14 +25,22 @@ public:
 
   void update();
   void draw();
+  void ping();
+  void getFileList();
   void onInput(u32 kdown);
   void onTouch(touchPosition &touch);
   void onGesture(touchPosition &startPosition, touchPosition &endPosition);
 
 private:
+  static inline ConnectionState connectionState;
+  std::string folderPath = "";
+  std::string backFolderPath = "";
   std::vector<BrowserItem> m_browserItems;
+  u16 yOffset;
   u16 startIndex;
   u16 currIndex;
-  u16 currItemIndex;
+  BrowserItem currItem;
   u16 itemsAmount;
+  std::string statusMessage = "";
+  bool isConnected = false;
 };

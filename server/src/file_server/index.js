@@ -42,9 +42,17 @@ module.exports = {
         this.stop();
         app.use('/download', express.static(this.opts.startFolder));
         app.get('/ping', function(req, res) {res.send("pong")});
-        app.get('/list/:folderPath?', function(req, res) {
-            req.params.folderPath = (req.params.folderPath != null) ? req.params.folderPath : '/';
-            var files = {status:1, path:req.params.folderPath, items:[]};
+        app.get('/list:folderPath(*)', function(req, res) {
+            if (req.params.folderPath != null) {
+                if (req.params.folderPath.charAt(0) != "/") {
+                    req.params.folderPath = "/" + req.params.folderPath;
+                }
+                req.params.folderPath = req.params.folderPath.replace(/\/{2,100}/ig, "/");
+            }
+            else {
+                req.params.folderPath = "/";
+            }
+            var files = {status:1, path:req.params.folderPath, backPath:req.params.folderPath.substr(0, req.params.folderPath.lastIndexOf("/")), items:[]};
             try {
                 fs.readdirSync(path.join(this.opts.startFolder, req.params.folderPath)).forEach(file => {
                     if (file.indexOf(".") == 0) return;

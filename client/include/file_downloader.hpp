@@ -26,12 +26,13 @@ class FileDownloader
     CURLcode res;
     FILE* fp;
     u32 currIndex;
+    static std::string urlencode(std::string c);
 
   public:
     void initDownload(DownloadInfo *dlInfo);
     void startDownload();
     std::string ping();
-    std::string getFileList();
+    std::string getFileList(std::string path);
     static int calcProgress(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded);
     static std::string formatBytes(uint bytes);
     static size_t writeToFile(void *ptr, size_t size, size_t nmemb, FILE *stream);

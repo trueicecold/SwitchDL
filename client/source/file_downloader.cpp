@@ -10,20 +10,20 @@ FileDownloader::~FileDownloader()
 {
 }
 
-std::string FileDownloader::getFileList() {
+std::string FileDownloader::getFileList(std::string path) {
   std::string buffer;
   curl = curl_easy_init();
   if (!curl)
     printf("Curl initialization failed!\n");
-
-  curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.104:3333/list");
+  curl_easy_setopt(curl, CURLOPT_URL, ("http://192.168.1.104:3333/list" + FileDownloader::urlencode(path)).c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 
   CURLcode res = curl_easy_perform(curl);
 
   if (res != CURLE_OK)
-    printf("Update download CURL perform failed: %s\n", curl_easy_strerror(res));
+    printf("File list failed: %s\n", curl_easy_strerror(res));
 
   curl_easy_cleanup(curl);
 
@@ -32,27 +32,33 @@ std::string FileDownloader::getFileList() {
 
 std::string FileDownloader::ping() {
   std::string buffer;
-  curl = curl_easy_init();
-  if (!curl) {
-    printf("Curl initialization failed!\n");
-    return "";
+  printf("32432411111111 ping\n");
+  try {
+    curl = curl_easy_init();
+    if (!curl) {
+        printf("Curl initialization failed!\n");
+        return "";
+    }
+
+    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.104:3333/ping");
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
+
+    CURLcode res = curl_easy_perform(curl);
+
+    if (res != CURLE_OK) {
+        printf("Error pinging server: %s\n", curl_easy_strerror(res));
+        return "";
+    }
+
+    curl_easy_cleanup(curl);
+
+    return buffer;
   }
-
-  curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.104:3333/ping");
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
-
-  CURLcode res = curl_easy_perform(curl);
-
-  if (res != CURLE_OK) {
-    printf("Error pinging server: %s\n", curl_easy_strerror(res));
-    return "";
+  catch(std::exception& e) {
   }
-
-  curl_easy_cleanup(curl);
-
-  return buffer;
+  return "";
 }
 
 void FileDownloader::initDownload(DownloadInfo *dlInfo) {
@@ -82,7 +88,7 @@ void FileDownloader::startDownload() {
   CURLcode res = curl_easy_perform(curl);
 
   if (res != CURLE_OK)
-    printf("Update download CURL perform failed: %s\n", curl_easy_strerror(res));
+    printf("Download file failed: %s\n", curl_easy_strerror(res));
 
   fclose(fp);
   curl_easy_cleanup(curl);
@@ -150,4 +156,29 @@ size_t FileDownloader::writeToFile(void *ptr, size_t size, size_t nmemb, FILE *s
 size_t FileDownloader::writeToString(void *ptr, size_t size, size_t nmemb, std::string *str) {
     str->append((char*) ptr, size * nmemb);
     return size * nmemb;
+}
+
+std::string FileDownloader::urlencode(std::string s)
+{
+    static char lookup[]= "0123456789abcdef";
+    std::stringstream e;
+    for(int i=0, ix=s.length(); i<ix; i++)
+    {
+        char& c = s[i];
+        if ( (48 <= c && c <= 57) ||//0-9
+             (65 <= c && c <= 90) ||//abc...xyz
+             (97 <= c && c <= 122) || //ABC...XYZ
+             (c=='-' || c=='_' || c=='.' || c=='~') 
+        )
+        {
+            e << c;
+        }
+        else
+        {
+            e << '%';
+            e << lookup[ (c&0xF0)>>4 ];
+            e << lookup[ (c&0x0F) ];
+        }
+    }
+    return e.str();
 }
