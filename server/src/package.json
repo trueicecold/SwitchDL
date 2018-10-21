@@ -13,7 +13,8 @@
   "dependencies": {
     "electron-installer-dmg": "^2.0.0",
     "electron-packager": "^12.2.0",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "minimist": "^1.2.0"
   },
   "devDependencies": {
     "electron": "^3.0.4"

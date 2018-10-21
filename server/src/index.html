@@ -3,17 +3,12 @@
     <head>
         <script>
             var server = require('./file_server');
-        
+            var config;
+
             function toggleServer() {
                 if (!server.isStarted()) {
-                    if (document.querySelector('input[type="file"]').files.length > 0) {
-                        if (!isNaN(parseInt(document.querySelector(".port_number").value))) {
-                            server.init({
-                                port:document.querySelector(".port_number").value,
-                                startFolder:document.querySelector('input[type="file"]').files[0].path
-                            });
-                        }
-                        else {
+                    if (document.querySelector("#default_path_hidden").value != "") {
+                        if (isNaN(parseInt(document.querySelector(".port_number").value))) {
                             alert("Please enter a valid port.");
                             return;
                         }
@@ -23,6 +18,7 @@
                         return;
                     }
                     try {
+                        server.opts = {startFolder:document.querySelector(".input_label").innerHTML, port:parseInt(document.querySelector(".port_number").value)};
                         server.start();
                         document.querySelector(".start_button").value = "Stop Server";
                     }
@@ -51,6 +47,14 @@
 
             function showPath() {
                 document.querySelector(".input_label").innerHTML = document.querySelector('input[type="file"]').files[0].path;
+                document.querySelector("#default_path_hidden").value = document.querySelector('input[type="file"]').files[0].path;
+            }
+
+            window.onload = function() {
+                config = server.init();
+                console.log(config);
+                document.querySelector("#default_path_hidden").value = document.querySelector(".input_label").innerHTML = config.startFolder;
+                document.querySelector(".port_number").value = config.port;
             }
         </script>
         
@@ -98,6 +102,8 @@
                 height:20px;
                 border:1px solid #ffffff;
                 padding-left:5px;
+                overflow:hidden;
+                text-overflow:ellipsis;
             }
 
             input[type="file"] {
@@ -130,6 +136,7 @@
                     <label class="input_label" for="default_path">
                     </label>
                     <input id="default_path" onchange="showPath();" style="display:none;" type="file" directory webkitdirectory/>
+                    <input id="default_path_hidden" style="display:none;"/>
                 </td>
             </tr>
             <tr>

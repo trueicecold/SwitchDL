@@ -5,10 +5,25 @@ const app = express();
 const port = 3000;
 
 module.exports = {
+    config:{},
     init:function(opts) {
-        this.opts = (opts) || {
-            port:3000
-        };
+        if (!opts) {
+            if (fs.existsSync("SwitchDL.json")) {
+                this.config = fs.readFileSync("SwitchDL.json");
+                try {
+                    this.config = JSON.parse(this.config);
+                    this.opts = {startFolder:this.config.startFolder, port:this.config.port};
+                    return this.opts;
+                }
+                catch(e) {
+                }
+            }
+            this.opts = {startFolder:path.dirname(require.main.filename), port:3333};
+        }
+        else {
+            this.opts = opts;
+        }
+        return this.opts;
     },
     start:function() {
         if (this.opts) {
@@ -40,6 +55,7 @@ module.exports = {
     },
     startServer:function() {
         this.stop();
+        this.saveConfig();
         app.use('/download', express.static(this.opts.startFolder));
         app.get('/ping', function(req, res) {res.send("pong")});
         app.get('/list:folderPath(*)', function(req, res) {
@@ -80,5 +96,8 @@ module.exports = {
   },
   isStarted:function() {
     return this.express_server != null;
+  },
+  saveConfig:function() {
+      fs.writeFileSync("SwitchDL.json", JSON.stringify(this.opts));
   }
 };
