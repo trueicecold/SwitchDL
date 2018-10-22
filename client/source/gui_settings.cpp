@@ -1,5 +1,6 @@
 #include "gui_settings.hpp"
 #include "file_downloader.hpp"
+#include "config.hpp"
 
 #include <string>
 #include <sstream>
@@ -7,6 +8,8 @@
 #include <math.h>
 
 GuiSettings::GuiSettings() : Gui() {
+    ip_address = Config::IP_ADDRESS;
+    port = Config::PORT;
 }
 
 GuiSettings::~GuiSettings() {
@@ -14,13 +17,7 @@ GuiSettings::~GuiSettings() {
 
 void GuiSettings::update() {
     Gui::update();
-    /*if (NumericKeyboard::shown) {
-        NumericKeyboard::update();
-    }*/
 }
-
-std::string ip_address = "10.0.0.138";
-std::string port = "9999";
 
 FileDownloader downloader;
 
@@ -51,7 +48,14 @@ void GuiSettings::onInput(u32 kdown) {
             Gui::g_nextGui = GUI_BROWSER;
         }
         else if (kdown & KEY_A) {
-            GuiSettings::save();
+            try {
+                Config::save(ip_address, port);
+                (new Snackbar("Settings saved successfully."))->show();
+                Gui::g_nextGui = GUI_BROWSER;
+            }
+            catch(std::exception& e) {
+                (new Snackbar("Failed saving settings."))->show();
+            }
         }
     }
 }
@@ -68,21 +72,4 @@ void GuiSettings::onTouch(touchPosition &touch) {
 }
 
 void GuiSettings::onGesture(touchPosition &startPosition, touchPosition &endPosition) {
-}
-
-void GuiSettings::save() {
-    FILE* fp;
-
-    try {
-        mkdir("/SwitchDL", 0777);
-        fp = fopen("/SwitchDL/config.json", "w");
-        fputs(("{\"address\":\"" + ip_address + "\", \"port\":\"" + port + "\"}").c_str(), fp);
-        fclose(fp);
-        (new Snackbar("Settings saves successfully."))->show();
-        Gui::g_nextGui = GUI_BROWSER;
-    }
-    catch(std::exception& e) {
-        printf("Failed saving configuration\n");
-        (new Snackbar("Failed saving settings."))->show();
-    }
 }

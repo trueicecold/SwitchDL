@@ -10,10 +10,10 @@ extern "C" {
 class Config
 {
   public:
-    void load();
-    void save();
-    std::string IP_ADDRESS;
-    std::string PORT;
+    static void load();
+    static void save(std::string ip_address, std::string port);
+    static inline std::string IP_ADDRESS;
+    static inline std::string PORT;
 
     Config();
     ~Config();

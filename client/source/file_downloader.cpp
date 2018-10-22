@@ -1,4 +1,5 @@
 #include "file_downloader.hpp"
+#include "config.hpp"
 
 FileDownloader::FileDownloader()
 {
@@ -15,7 +16,7 @@ std::string FileDownloader::getFileList(std::string path) {
   curl = curl_easy_init();
   if (!curl)
     printf("Curl initialization failed!\n");
-  curl_easy_setopt(curl, CURLOPT_URL, ("http://192.168.1.104:3333/list" + FileDownloader::urlencode(path)).c_str());
+  curl_easy_setopt(curl, CURLOPT_URL, ("http://" + Config::IP_ADDRESS + ":" + Config::PORT + "/list" + FileDownloader::urlencode(path)).c_str());
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
@@ -39,8 +40,7 @@ std::string FileDownloader::ping() {
         printf("Curl initialization failed!\n");
         return "";
     }
-
-    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.104:3333/ping");
+    curl_easy_setopt(curl, CURLOPT_URL, ("http://" + Config::IP_ADDRESS + ":" + Config::PORT + "/ping").c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);

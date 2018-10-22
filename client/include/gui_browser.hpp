@@ -11,7 +11,8 @@ typedef struct {
   u64 fileSize;
 } BrowserItem;
 
-enum ConnectionState{
+enum ConnectionState {
+  NO_CONFIG,
   NOT_CONNECTED,
   CONNECTION_ERROR,
   LOADING,

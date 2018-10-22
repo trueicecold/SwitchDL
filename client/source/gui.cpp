@@ -548,7 +548,6 @@ void Gui::endDraw() {
     Gui::g_currListSelector->draw(this);
 
   if (Gui::g_currSnackbar != nullptr) {
-    printf("enddraw2\n");
     Gui::g_currSnackbar->draw(this);
   }
 

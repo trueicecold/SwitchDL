@@ -21,7 +21,10 @@ GuiBrowser::GuiBrowser() : Gui() {
   itemsAmount = 7;
   connectionState = ConnectionState::NOT_CONNECTED;
   
-  ping();
+  if (Config::IP_ADDRESS != "" && Config::PORT != "")
+    ping();
+  else
+    connectionState = ConnectionState::NO_CONFIG;
 }
 
 GuiBrowser::~GuiBrowser() {
@@ -39,8 +42,13 @@ void GuiBrowser::draw() {
     case ConnectionState::NOT_CONNECTED:
       Gui::drawTextAligned(font20, Gui::g_framebuffer_width/2, Gui::g_framebuffer_height/2, currTheme.textColor, "Not connected to server.", ALIGNED_CENTER);
       break;
+    case ConnectionState::NO_CONFIG:
+      Gui::drawTextAligned(font20, Gui::g_framebuffer_width/2, Gui::g_framebuffer_height/2, currTheme.textColor, "No configuration found. Go to settings to define IP Address and Port to connect to.", ALIGNED_CENTER);
+      Gui::drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0F0 Settings     \uE0EF Exit", ALIGNED_RIGHT);
+      break;
     case ConnectionState::CONNECTION_ERROR:
       Gui::drawTextAligned(font20, Gui::g_framebuffer_width/2, Gui::g_framebuffer_height/2, currTheme.textColor, "Error connecting to server. Please check the IP and Port and try again.", ALIGNED_CENTER);
+      Gui::drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0F0 Settings     \uE0E0 Retry     \uE0EF Exit", ALIGNED_RIGHT);
       break;
     case ConnectionState::LOADING:
       Gui::drawTextAligned(font20, Gui::g_framebuffer_width/2, Gui::g_framebuffer_height/2, currTheme.textColor, "Loading file list...", ALIGNED_CENTER);
@@ -71,7 +79,7 @@ void GuiBrowser::draw() {
 
         //Drawing the bottom part
         Gui::drawRectangle(30, 658, 1220, 1, currTheme.textColor);
-        Gui::drawTextAligned(font20, 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E4 Page up     \uE0E5 Page down", ALIGNED_LEFT);
+        Gui::drawTextAligned(font20, 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E4 Page up     \uE0E5 Page down     \uE0F0 Settings", ALIGNED_LEFT);
         switch (currItem.type) {
           case BrowserItem::FOLDER:
             Gui::drawTextAligned(font20, Gui::g_framebuffer_width - 50, Gui::g_framebuffer_height - 50, currTheme.textColor, "\uE0E0 Enter folder     \uE0EF Exit", ALIGNED_RIGHT);
@@ -155,13 +163,23 @@ void GuiBrowser::onInput(u32 kdown) {
     }
   }
   else if (kdown & KEY_A) {
-    if (currItem.type == BrowserItem::FOLDER) {
-      folderPath += std::string("/" + currItem.name);
-      getFileList();
-    }
-    else if (currItem.type == BrowserItem::BACK) {
-      folderPath = backFolderPath;
-      getFileList();
+    switch (connectionState) {
+      case ConnectionState::LOADED:
+        if (currItem.type == BrowserItem::FOLDER) {
+          folderPath += std::string("/" + currItem.name);
+          getFileList();
+        }
+        else if (currItem.type == BrowserItem::BACK) {
+          folderPath = backFolderPath;
+          getFileList();
+        }
+        break;
+      case ConnectionState::CONNECTION_ERROR:
+        ping();
+        break;
+      default:
+        ping();
+        break;
     }
   }
   printf("%d, %d\n", currIndex, startIndex);

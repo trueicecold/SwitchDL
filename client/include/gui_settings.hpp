@@ -22,14 +22,6 @@ public:
   void save();
 
 private:
-  static inline struct {
-    u8 titleIndex;
-    u8 accountIndex;
-
-    u64 titleId;
-    u128 userId;
-  } m_selected;
-
-  bool m_editableOnly = false;
-  u16 m_editableCount = 0;
+  std::string ip_address = "";
+  std::string port = "";
 };

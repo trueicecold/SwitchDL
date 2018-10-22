@@ -4,6 +4,7 @@
 #include "gui_main.hpp"
 #include "gui_settings.hpp"
 #include "gui_browser.hpp"
+#include "config.hpp"
 #include <chrono>
 
 #include <iostream>
@@ -49,7 +50,7 @@ void update(void *args) {
     mutexUnlock(&mutexCurrGui);
 
     if (NumericKeyboard::shown) {
-      repetitionKeys = (KEY_B);
+      repetitionKeys = (KEY_X);
     }
 
     if (kheld & repetitionKeys) inputTicker++;
@@ -87,7 +88,8 @@ int main(int argc, char** argv) {
   setTheme(colorSetId);
   setsysExit();
 
-  Gui::g_nextGui = GUI_SETTINGS;
+  Config::load();
+  Gui::g_nextGui = GUI_BROWSER;
 
   /*Handle txHandle;
   if (R_FAILED(smRegisterService(&txHandle, "tx", false, 1)))
