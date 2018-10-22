@@ -2,16 +2,16 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const settings = require('electron-settings');
 const port = 3000;
 
 module.exports = {
     config:{},
     init:function(opts) {
         if (!opts) {
-            if (fs.existsSync("SwitchDL.json")) {
-                this.config = fs.readFileSync("SwitchDL.json");
+            this.config = settings.get("config");
+            if (this.config) {
                 try {
-                    this.config = JSON.parse(this.config);
                     this.opts = {startFolder:this.config.startFolder, port:this.config.port};
                     return this.opts;
                 }
@@ -98,6 +98,7 @@ module.exports = {
     return this.express_server != null;
   },
   saveConfig:function() {
-      fs.writeFileSync("SwitchDL.json", JSON.stringify(this.opts));
+    settings.set("config", this.opts);
+    fs.writeFileSync("SwitchDL.json", JSON.stringify(this.opts));
   }
 };
