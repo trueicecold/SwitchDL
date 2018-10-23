@@ -144,61 +144,64 @@ void GuiBrowser::getFileList() {
 }
 
 void GuiBrowser::onInput(u32 kdown) {
-  if (kdown & KEY_UP) {
-    if (currIndex > 0) {
-      currIndex--;
-      currItem = m_browserItems[currIndex];
-      if (currIndex < startIndex+3 && startIndex > 0) {
-        startIndex--;
-      }
-    }
-
-  } else if (kdown & KEY_DOWN) {
-    if (currIndex < m_browserItems.size()-1) {
-      currIndex++;
-      currItem = m_browserItems[currIndex];
-      if (currIndex > startIndex+itemsAmount-4 && startIndex < m_browserItems.size()) {
-        startIndex++;
-      }
-    }
-  }
-  else if (kdown & KEY_A) {
-    switch (connectionState) {
-      case ConnectionState::LOADED:
-        if (currItem.type == BrowserItem::FOLDER) {
-          folderPath += std::string("/" + currItem.name);
-          getFileList();
+  switch (connectionState) {
+    case ConnectionState::LOADED:
+      if (kdown & KEY_UP) {
+        if (currIndex > 0) {
+          currIndex--;
+          currItem = m_browserItems[currIndex];
+          if (currIndex < startIndex+3 && startIndex > 0) {
+            startIndex--;
+          }
         }
-        else if (currItem.type == BrowserItem::BACK) {
-          folderPath = backFolderPath;
-          getFileList();
+      } else if (kdown & KEY_DOWN) {
+        if (currIndex < m_browserItems.size()-1) {
+          currIndex++;
+          currItem = m_browserItems[currIndex];
+          if (currIndex > startIndex+itemsAmount-4 && startIndex < m_browserItems.size()) {
+            startIndex++;
+          }
         }
-        break;
-      case ConnectionState::CONNECTION_ERROR:
-        ping();
-        break;
-      default:
-        ping();
-        break;
-    }
+      }
+      else if (kdown & KEY_A) {
+          if (currItem.type == BrowserItem::FOLDER) {
+            folderPath += std::string("/" + currItem.name);
+            getFileList();
+          }
+          else if (currItem.type == BrowserItem::BACK) {
+            folderPath = backFolderPath;
+            getFileList();
+          }
+      }
+      else if (kdown & KEY_R) {
+        if (currIndex < m_browserItems.size()-itemsAmount) {
+          currIndex += itemsAmount;
+          currItem = m_browserItems[currIndex];
+          startIndex += itemsAmount;
+        }
+        else {
+          currIndex = m_browserItems.size()-1;
+          currItem = m_browserItems[currIndex];
+          startIndex = m_browserItems.size()-1;
+        }
+      }
+      else if (kdown & KEY_L) {
+        if (currIndex > itemsAmount) {
+          currIndex -= itemsAmount;
+          currItem = m_browserItems[currIndex];
+          startIndex -= itemsAmount;
+        }
+        else {
+          currIndex = 0;
+          currItem = m_browserItems[currIndex];
+          startIndex = 0;
+        }
+      }
+      break;
+    default:
+      ping();
+      break;
   }
-  printf("%d, %d\n", currIndex, startIndex);
-  
-  
-  
-  
-  if (kdown & KEY_A) {
-  }
-
-  if (kdown & KEY_L) {
-  }
-
-  if (kdown & KEY_X) {
-  }
-
-  if (kdown & KEY_B) {
-  }
-
   if (kdown & KEY_MINUS) {
     Gui::g_nextGui = GUI_SETTINGS;
   }

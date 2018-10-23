@@ -134,7 +134,7 @@ int main(int argc, char** argv) {
           break;
         case GUI_BROWSER:
           currGui = new GuiBrowser();
-          repetitionKeys = (KEY_UP | KEY_DOWN);
+          repetitionKeys = (KEY_UP | KEY_DOWN | KEY_L | KEY_R);
           break;
         default: 
           repetitionKeys = 0;
