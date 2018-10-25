@@ -4,6 +4,9 @@
 
 #include <vector>
 #include <unordered_map>
+#include <string>
+
+#include "worker.hpp"
 
 typedef struct {
   std::string name;
@@ -44,4 +47,5 @@ private:
   u16 itemsAmount;
   std::string statusMessage = "";
   bool isConnected = false;
+  std::string pingRet;
 };

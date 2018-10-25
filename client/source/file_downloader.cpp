@@ -54,6 +54,8 @@ std::string FileDownloader::ping() {
 
     curl_easy_cleanup(curl);
 
+    printf("%s\n", buffer.c_str());
+
     return buffer;
   }
   catch(std::exception& e) {
@@ -168,7 +170,7 @@ std::string FileDownloader::urlencode(std::string s)
         if ( (48 <= c && c <= 57) ||//0-9
              (65 <= c && c <= 90) ||//abc...xyz
              (97 <= c && c <= 122) || //ABC...XYZ
-             (c=='-' || c=='_' || c=='.' || c=='~') 
+             (c=='-' || c=='_' || c=='.' || c=='~')
         )
         {
             e << c;

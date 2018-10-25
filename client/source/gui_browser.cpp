@@ -20,7 +20,7 @@ GuiBrowser::GuiBrowser() : Gui() {
   currIndex = 0;
   itemsAmount = 7;
   connectionState = ConnectionState::NOT_CONNECTED;
-  
+
   if (Config::IP_ADDRESS != "" && Config::PORT != "")
     ping();
   else
@@ -99,10 +99,10 @@ void GuiBrowser::draw() {
 }
 
 void GuiBrowser::ping() {
-  printf("ping\f");
+  printf("ping\n");
   FileDownloader downloader;
 
-  if (downloader.ping() == "pong") {
+  if (downloader.ping().find("pong") != std::string::npos) {
     getFileList();
   }
   else {
@@ -123,7 +123,7 @@ void GuiBrowser::getFileList() {
   try {
     listJson = json::parse(downloader.getFileList(folderPath));
     if(listJson == nullptr) return;
-    
+
     folderPath = listJson["path"];
     backFolderPath = listJson["backPath"];
 
@@ -144,6 +144,17 @@ void GuiBrowser::getFileList() {
 }
 
 void GuiBrowser::onInput(u32 kdown) {
+  //TODO: Implement this for every ping / file list request
+  if(kdown & KEY_ZL) {
+    Worker *worker = Worker::createWorker([this](){
+      FileDownloader downloader;
+      printf("Threaded ping started\n");
+      pingRet = downloader.ping();
+      printf("Threaded ping done\n");
+    }, [this](){ printf("Threded ping response: %s\n", pingRet.c_str()); });
+    worker->start();
+  }
+
   switch (connectionState) {
     case ConnectionState::LOADED:
       if (kdown & KEY_UP) {

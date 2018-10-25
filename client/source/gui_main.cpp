@@ -1,7 +1,5 @@
 #include "gui_main.hpp"
 
-#include "beta_bin.h"
-
 #include <string>
 #include <sstream>
 #include <math.h>
