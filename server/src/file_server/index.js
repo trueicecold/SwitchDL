@@ -57,7 +57,7 @@ module.exports = {
         this.stop();
         this.saveConfig();
         app.use('/download', express.static(this.opts.startFolder));
-        app.get('/ping', function(req, res) {res.send("pong")});
+        app.get('/ping', function(req, res) {setTimeout(function() {res.send("pong");}.bind(this), 3000)});
         app.get('/list:folderPath(*)', function(req, res) {
             if (req.params.folderPath != null) {
                 if (req.params.folderPath.charAt(0) != "/") {

@@ -19,5 +19,5 @@ void Worker::start() {
 void threadFunc(void* args) {
   ((Worker*)args)->m_workerFunc();
   ((Worker*)args)->m_finishedCallback();
-  delete (Worker*)args;
+  //delete (Worker*)args;
 }

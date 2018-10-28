@@ -1,5 +1,6 @@
 #include "file_downloader.hpp"
 #include "config.hpp"
+#include "gui_browser.hpp"
 
 FileDownloader::FileDownloader()
 {
@@ -11,60 +12,47 @@ FileDownloader::~FileDownloader()
 {
 }
 
-std::string FileDownloader::getFileList(std::string path) {
-  std::string buffer;
-  curl = curl_easy_init();
-  if (!curl)
-    printf("Curl initialization failed!\n");
-  curl_easy_setopt(curl, CURLOPT_URL, ("http://" + Config::IP_ADDRESS + ":" + Config::PORT + "/list" + FileDownloader::urlencode(path)).c_str());
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
-
-  CURLcode res = curl_easy_perform(curl);
-
-  if (res != CURLE_OK)
-    printf("File list failed: %s\n", curl_easy_strerror(res));
-
-  curl_easy_cleanup(curl);
-
-  return buffer;
-}
-
-std::string FileDownloader::ping() {
-  std::string buffer;
-  printf("32432411111111 ping\n");
+void FileDownloader::getFileList(std::string path, std::function<void(std::string)> func) {
+  std::string buffer = "";
+  CURLcode res;
   try {
     curl = curl_easy_init();
     if (!curl) {
         printf("Curl initialization failed!\n");
-        return "";
+        buffer = "";
     }
     curl_easy_setopt(curl, CURLOPT_URL, ("http://" + Config::IP_ADDRESS + ":" + Config::PORT + "/ping").c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeToString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5);
 
-    CURLcode res = curl_easy_perform(curl);
+    res = curl_easy_perform(curl);
 
     if (res != CURLE_OK) {
         printf("Error pinging server: %s\n", curl_easy_strerror(res));
-        return "";
+        buffer = "";
+    }
+
+    if (buffer == "pong") {
+        buffer = "";
+        curl_easy_setopt(curl, CURLOPT_URL, ("http://" + Config::IP_ADDRESS + ":" + Config::PORT + "/list" + FileDownloader::urlencode(path)).c_str());
+        res = curl_easy_perform(curl);
+
+        if (res != CURLE_OK) {
+            printf("Error getting file list from server: %s\n", curl_easy_strerror(res));
+            buffer = "";
+        }        
     }
 
     curl_easy_cleanup(curl);
-
-    printf("%s\n", buffer.c_str());
-
-    return buffer;
   }
   catch(std::exception& e) {
+      buffer = "";
   }
-  return "";
+  func(buffer);
 }
 
 void FileDownloader::initDownload(DownloadInfo *dlInfo) {
-
 }
 
 void FileDownloader::startDownload() {

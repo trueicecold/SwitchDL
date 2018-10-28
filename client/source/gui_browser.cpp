@@ -21,8 +21,10 @@ GuiBrowser::GuiBrowser() : Gui() {
   itemsAmount = 7;
   connectionState = ConnectionState::NOT_CONNECTED;
 
-  if (Config::IP_ADDRESS != "" && Config::PORT != "")
-    ping();
+  if (Config::IP_ADDRESS != "" && Config::PORT != "") {
+    printf("about to start\n");
+    getFileList();
+  }
   else
     connectionState = ConnectionState::NO_CONFIG;
 }
@@ -98,19 +100,32 @@ void GuiBrowser::draw() {
   Gui::endDraw();
 }
 
-void GuiBrowser::ping() {
-  printf("ping\n");
+void GuiBrowser::getFileListThread() {
   FileDownloader downloader;
+  downloader.getFileList(folderPath, [this](std::string response){
+    if (response != "") {
+      getFileListThreadResponse(response);
+    }
+  });
+}
 
-  if (downloader.ping().find("pong") != std::string::npos) {
-    getFileList();
+void GuiBrowser::getFileList() {
+  connectionState = ConnectionState::LOADING;
+  printf("called getFileList, path=%s\n", folderPath.c_str());
+  thrd_create(&fileListThread, [](void *args) -> int { ((GuiBrowser*)args)->getFileListThread(); return 0; }, this);
+}
+
+void GuiBrowser::getFileListThreadResponse(std::string response) {
+  if (response != "") {
+    GuiBrowser::getFileListResponse(response);
   }
   else {
     connectionState = ConnectionState::CONNECTION_ERROR;
   }
+  thrd_join(fileListThread, &fileListResult);
 }
 
-void GuiBrowser::getFileList() {
+void GuiBrowser::getFileListResponse(std::string response) {
   json listJson;
   FileDownloader downloader;
   m_browserItems.clear();
@@ -118,10 +133,8 @@ void GuiBrowser::getFileList() {
   currIndex = 0;
   startIndex = 0;
 
-  connectionState = ConnectionState::LOADING;
-
   try {
-    listJson = json::parse(downloader.getFileList(folderPath));
+    listJson = json::parse(response);
     if(listJson == nullptr) return;
 
     folderPath = listJson["path"];
@@ -144,15 +157,8 @@ void GuiBrowser::getFileList() {
 }
 
 void GuiBrowser::onInput(u32 kdown) {
-  //TODO: Implement this for every ping / file list request
   if(kdown & KEY_ZL) {
-    Worker *worker = Worker::createWorker([this](){
-      FileDownloader downloader;
-      printf("Threaded ping started\n");
-      pingRet = downloader.ping();
-      printf("Threaded ping done\n");
-    }, [this](){ printf("Threded ping response: %s\n", pingRet.c_str()); });
-    worker->start();
+    getFileList();
   }
 
   switch (connectionState) {
@@ -210,7 +216,7 @@ void GuiBrowser::onInput(u32 kdown) {
       }
       break;
     default:
-      ping();
+      getFileList();
       break;
   }
   if (kdown & KEY_MINUS) {

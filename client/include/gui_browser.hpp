@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <threads.h>
 
 #include "worker.hpp"
 
@@ -29,8 +30,10 @@ public:
 
   void update();
   void draw();
-  void ping();
   void getFileList();
+  void getFileListThread();
+  void getFileListThreadResponse(std::string response);
+  void getFileListResponse(std::string response);
   void onInput(u32 kdown);
   void onTouch(touchPosition &touch);
   void onGesture(touchPosition &startPosition, touchPosition &endPosition);
@@ -45,7 +48,7 @@ private:
   u16 currIndex;
   BrowserItem currItem;
   u16 itemsAmount;
-  std::string statusMessage = "";
-  bool isConnected = false;
-  std::string pingRet;
+
+  thrd_t fileListThread; 
+  int fileListResult;
 };
