@@ -4,11 +4,12 @@ void threadFunc(void*);
 
 Worker::Worker(std::function<void(void)> workerFunc, std::function<void(void)> finishedCallback)
 : m_workerFunc(workerFunc), m_finishedCallback(finishedCallback) {
-
+	
+	Worker::g_runningWorkers++;
 }
 
 Worker::~Worker() {
-
+	Worker::g_runningWorkers--;
 }
 
 void Worker::start() {
@@ -19,5 +20,5 @@ void Worker::start() {
 void threadFunc(void* args) {
   ((Worker*)args)->m_workerFunc();
   ((Worker*)args)->m_finishedCallback();
-  //delete (Worker*)args;
+  delete (Worker*)args;
 }

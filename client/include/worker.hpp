@@ -16,6 +16,8 @@ public:
   Worker& operator=(Worker &&) = delete;
 
   void start();
+  
+  static inline u8 g_runningWorkers = 0;
 private:
   Worker(std::function<void(void)> workerFunc, std::function<void(void)> finishedCallback);
 

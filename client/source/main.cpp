@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include "threads.hpp"
+#include "worker.hpp"
 
 extern "C" {
   #include "theme.h"
@@ -197,11 +198,13 @@ int main(int argc, char** argv) {
 
     kheldOld = kheld;
   }
-
+	
   /*curlClass::downloadCanceled = true;*/
   updateThreadRunning = false;
   Threads::joinAll();
-
+  
+  while(Worker::g_runningWorkers);
+  
   delete currGui;
   socketExit();
   gfxExit();
